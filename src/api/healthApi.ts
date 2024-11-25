@@ -1,4 +1,4 @@
-import { API_BASE_URL, handleResponse } from './config';
+import { API_BASE_URL, handleResponse, getAuthHeaders } from './config';
 
 export interface Activity {
   id: string;
@@ -34,38 +34,58 @@ export interface Meal {
 
 // Activities
 export const getActivities = () => 
-  fetch(`${API_BASE_URL}/activities`).then(handleResponse);
+  fetch(`${API_BASE_URL}/health/activities`, {
+    headers: getAuthHeaders()
+  }).then(handleResponse);
 
 export const addActivity = (activity: Omit<Activity, 'id'>) =>
-  fetch(`${API_BASE_URL}/activities`, {
+  fetch(`${API_BASE_URL}/health/activities`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders(),
     body: JSON.stringify(activity),
   }).then(handleResponse);
 
 // Water Intake
+export const getWaterIntake = (date: string) =>
+  fetch(`${API_BASE_URL}/health/water-intake?date=${date}`, {
+    headers: getAuthHeaders()
+  }).then(handleResponse);
+
 export const addWaterIntake = (intake: Omit<WaterIntake, 'id'>) =>
-  fetch(`${API_BASE_URL}/water-intake`, {
+  fetch(`${API_BASE_URL}/health/water-intake`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders(),
     body: JSON.stringify(intake),
   }).then(handleResponse);
 
 // Sleep
+export const getSleepRecords = () =>
+  fetch(`${API_BASE_URL}/health/sleep`, {
+    headers: getAuthHeaders()
+  }).then(handleResponse);
+
 export const addSleepRecord = (sleep: Omit<Sleep, 'id'>) =>
-  fetch(`${API_BASE_URL}/sleep`, {
+  fetch(`${API_BASE_URL}/health/sleep`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders(),
     body: JSON.stringify(sleep),
   }).then(handleResponse);
 
-// Nutrition
-export const getMeals = () => 
-  fetch(`${API_BASE_URL}/meals`).then(handleResponse);
+// Meals
+export const getMeals = (date: string) =>
+  fetch(`${API_BASE_URL}/health/meals?date=${date}`, {
+    headers: getAuthHeaders()
+  }).then(handleResponse);
 
 export const addMeal = (meal: Omit<Meal, 'id'>) =>
-  fetch(`${API_BASE_URL}/meals`, {
+  fetch(`${API_BASE_URL}/health/meals`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders(),
     body: JSON.stringify(meal),
+  }).then(handleResponse);
+
+export const deleteMeal = (id: string) =>
+  fetch(`${API_BASE_URL}/health/meals/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
   }).then(handleResponse);

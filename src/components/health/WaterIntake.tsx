@@ -1,10 +1,33 @@
 import React from 'react';
 import { Droplets } from 'lucide-react';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { addWaterIntake } from '../../api/healthApi';
+import toast from 'react-hot-toast';
 
 export function WaterIntake() {
+  const queryClient = useQueryClient();
+  const { data: waterIntake } = useQuery('waterIntake', () => {
+    const today = new Date();
+    return fetch(`${API_BASE_URL}/water-intake?date=${today.toISOString()}`).then(handleResponse);
+  });
+
+  const addWaterMutation = useMutation(addWaterIntake, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('waterIntake');
+      toast.success('Water intake updated');
+    },
+    onError: () => {
+      toast.error('Failed to update water intake');
+    },
+  });
+
   const target = 2.5; // Liters
-  const current = 1.8;
-  const percentage = (current / target) * 100;
+  const current = waterIntake?.reduce((acc, record) => acc + record.amount, 0) || 0;
+  const percentage = Math.min((current / target) * 100, 100);
+
+  const handleAddWater = (amount: number) => {
+    addWaterMutation.mutate({ amount, date: new Date() });
+  };
 
   return (
     <div className="bg-white rounded-xl p-6 shadow-sm">
@@ -13,9 +36,6 @@ export function WaterIntake() {
           <Droplets className="w-5 h-5 text-primary-500 mr-2" />
           <h2 className="text-lg font-semibold">Water Intake</h2>
         </div>
-        <button className="text-sm text-primary-500 hover:text-primary-600">
-          + Add
-        </button>
       </div>
 
       <div className="flex items-center justify-center mb-4">
@@ -47,12 +67,14 @@ export function WaterIntake() {
       </div>
 
       <div className="grid grid-cols-4 gap-2">
-        {[1, 2, 3, 4].map((hour) => (
+        {[0.25, 0.5, 0.75, 1].map((amount) => (
           <button
-            key={hour}
-            className="p-2 text-sm text-center rounded-lg border border-gray-200 hover:border-primary-500 hover:text-primary-500"
+            key={amount}
+            onClick={() => handleAddWater(amount)}
+            disabled={addWaterMutation.isLoading}
+            className="p-2 text-sm text-center rounded-lg border border-gray-200 hover:border-primary-500 hover:text-primary-500 disabled:opacity-50"
           >
-            +250ml
+            +{amount * 1000}ml
           </button>
         ))}
       </div>
