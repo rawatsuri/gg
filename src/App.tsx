@@ -1,18 +1,11 @@
-import React, { useState } from 'react';
-import { NavigationBar } from './components/NavigationBar';
-import { HomePage } from './pages/HomePage';
-import { HealthPage } from './pages/HealthPage';
-import { WealthPage } from './pages/WealthPage';
+import React from 'react';
 
-export default function App() {
-  const [currentPage, setCurrentPage] = useState('home');
-
+function App() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      {currentPage === 'home' && <HomePage />}
-      {currentPage === 'health' && <HealthPage />}
-      {currentPage === 'wealth' && <WealthPage />}
-      <NavigationBar currentPage={currentPage} onPageChange={setCurrentPage} />
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <p>Start prompting (or editing) to see magic happen :)</p>
     </div>
   );
 }
+
+export default App;
